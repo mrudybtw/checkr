@@ -14,7 +14,7 @@
 <body>
     <div class="container mt-5">
         <h1>Панель управления</h1>
-        <p>Привет, {% if 'user_id' in session %} {{ get_user_by_username(session['user_id'])['username'] }}! {% endif %}
+        <p>Привет, {{ username }}!
             <a href="{{ url_for('add_website_route') }}" class="btn btn-success">Добавить сайт</a>
             <a href="{{ url_for('logout') }}" class="btn btn-danger">Выйти</a></p>
 

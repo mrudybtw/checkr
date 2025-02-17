@@ -32,4 +32,104 @@ def check_website(url):
             "status_code": None,
         }
 
-@app.r
+@app.route("/")
+def home():
+    if 'user_id' in session:
+        user_id = session['user_id']
+        websites = get_websites_by_user_id(user_id)
+        return render_template("dashboard.html", websites=websites)
+    return render_template("index.html")
+
+@app.route("/check", methods=["GET"])
+def check():
+    url = request.args.get("url")
+    if not url:
+        return "Необходимо указать URL", 400
+
+    result = check_website(url)
+
+    # Сохраняем результат в базу данных, если пользователь залогинен и сайт принадлежит ему
+    if 'user_id' in session:
+        user_id = session['user_id']
+        with get_db() as db:
+            website = db.execute("SELECT * FROM websites WHERE user_id = ? AND url = ?", (user_id, url)).fetchone()
+        if website:
+            add_check_result(website['id'], result['status'], result.get('response_time'), result.get('status_code'), result.get('error'))
+
+    return render_template("check_result.html", result=result)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+
+        existing_user = get_user_by_username(username)
+        if existing_user:
+            return "Пользователь с таким именем уже существует", 400
+
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        add_user(username, hashed_password, email)
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user = get_user_by_username(username)
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+            session['user_id'] = user['id']
+            return redirect(url_for('home'))
+
+        return "Неверное имя пользователя или пароль", 401
+
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('home'))
+
+@app.route('/add_website', methods=['GET', 'POST'])
+def add_website_route():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        url = request.form['url']
+        user_id = session['user_id']
+        add_website(user_id, url)
+        return redirect(url_for('dashboard'))  # Перенаправляем на dashboard после добавления
+
+    return render_template('add_website.html')
+
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    user = get_user_by_username(user_id) # Получаем данные пользователя
+    if not user:  # Дополнительная проверка на случай, если пользователя нет в БД
+        session.pop('user_id', None)
+        return redirect(url_for('login'))
+
+    username = user['username'] # Получаем имя
+    websites = get_websites_by_user_id(user_id)
+
+    websites_with_checks = []
+    for website in websites:
+        last_check = get_checks_by_website_id(website['id'])
+        if last_check:
+            website['last_check'] = last_check[0]  # Берем только последнюю проверку
+        websites_with_checks.append(website)
+    return render_template('dashboard.html', websites=websites_with_checks, username=username) # Передаём username
+
+if __name__ == "__main__":
+    init_db()  # Инициализация базы данных
+    app.run(debug=False)  # debug=False для production!
