@@ -3,63 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Checkr</title>
+    <title>Панель управления - Мониторинг доступности</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-         <h1>Панель управления</h1>
-    <p>Привет, {{ session.username }}! <a href="{{ url_for('logout') }}">Выйти</a></p>
-    <h2>Ваши сайты:</h2>
-    <a href="{{ url_for('add_website_route') }}" class="btn btn-success mb-3">Добавить сайт</a>
+    <div class="container mt-5">
+        <h1>Панель управления</h1>
+        <p>Привет, {% if 'user_id' in session %} {{ get_user_by_username(session['user_id'])['username'] }}! {% endif %}
+            <a href="{{ url_for('add_website_route') }}" class="btn btn-success">Добавить сайт</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Выйти</a></p>
 
-    {% if websites %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>URL</th>
-                <th>Статус</th>
-                <th>Время отклика (мс)</th>
-                <th>Код ответа</th>
-                <th>Последняя проверка</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for website in websites %}
-                <tr>
-                    <td>{{ website.url }}</td>
-                     <td>
-                        {% if website.last_check.status == "available" %}
-                            <span class="badge badge-success">Доступен</span>
-                        {% else %}
-                             <span class="badge badge-danger">Недоступен</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if website.last_check.status == "available" %}
-                            {{ website.last_check.response_time }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if website.last_check.status == "available" %}
-                            {{ website.last_check.status_code }}
-                        {% else %}
-                             {{ website.last_check.status_code }}
-                        {% endif %}
-                    </td>
+        <h2>Ваши сайты:</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Последняя проверка</th>
+                        <th>Статус</th>
+                        <th>Время отклика (мс)</th>
+                        <th>Код ответа</th>
+                        <th>Ошибка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for website in websites %}
+                    <tr>
+                        <td><a href="{{ website.url }}" target="_blank">{{ website.url }}</a></td>
+                        <td>
+                            {% if website.last_check %}
+                                {{ website.last_check.checked_at }}
+                            {% else %}
+                                Еще не проверялся
+                            {% endif %}
+                        </td>
+                        <td>
+                           {% if website.last_check %}
+                                {% if website.last_check.status == 'available' %}
+                                    <span class="badge badge-success">Доступен</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Недоступен</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge badge-secondary">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if website.last_check and website.last_check.response_time is not none %}
+                                {{ website.last_check.response_time|round(2) }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                           {% if website.last_check and website.last_check.status_code is not none %}
+                                {{ website.last_check.status_code }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
 
-                    <td>{{ website.last_check.checked_at if website.last_check.checked_at else '-' }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-        <p>Вы еще не добавили ни одного сайта.</p>
-    {% endif %}
-
+                        <td>
+                            {% if website.last_check and website.last_check.error %}
+                                {{ website.last_check.error }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </body>
 </html>

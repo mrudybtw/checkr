@@ -1,35 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Результат проверки - Checkr</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результат проверки - Мониторинг доступности</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-     <style>
-        body {
-            font-family: sans-serif;
-             margin: 20px;
-        }
-    </style>
-
 </head>
 <body>
-  <div class="container">
-    <h1>Результат проверки</h1>
-    <p>URL: <strong>{{ result.get('url', 'N/A') }}</strong></p>  
-    <p>Статус:
-        {% if result.status == "available" %}
-            <strong class="text-success">Доступен</strong>
-        {% else %}
-            <strong class="text-danger">Недоступен</strong>
-        {% endif %}
-    </p>
-    {% if result.status == "available" %}
-        <p>Время отклика: {{ result.response_time }} мс</p>
-        <p>Код ответа: {{ result.status_code }}</p>
-    {% elif result.status == "unavailable" %}
-         <p>Ошибка: {{result.error}}</p>
-    {% endif %}
+    <div class="container mt-5">
+        <h1>Результат проверки</h1>
+        <p>URL: <strong>{{ result.url }}</strong></p>
 
-    <a href="/" class="btn btn-secondary">Назад</a>
-  </div>
+        {% if result.status == "available" %}
+            <p>Статус: <span class="badge badge-success">Доступен</span></p>
+            <p>Время отклика: {{ result.response_time|round(2) }} мс</p>
+            <p>Код ответа: {{ result.status_code }}</p>
+        {% else %}
+            <p>Статус: <span class="badge badge-danger">Недоступен</span></p>
+            <p>Ошибка: {{ result.error }}</p>
+            {% if result.status_code %}
+                <p>Код ответа: {{ result.status_code }}</p>
+            {% endif %}
+        {% endif %}
+         <p class="mt-3"><a href="{{ url_for('home') }}">Вернуться на главную</a></p>
+    </div>
 </body>
 </html>

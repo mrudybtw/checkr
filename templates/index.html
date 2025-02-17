@@ -1,25 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Checkr - Мониторинг доступности</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная - Мониторинг доступности</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Checkr - Мониторинг доступности</h1>
-        <p>Введите URL сайта для проверки:</p>
-        <form action="/check" method="GET">
-            <div class="form-group">
-                <input type="url" name="url" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Проверить</button>
-        </form>
+    <div class="container mt-5">
+        <div class="jumbotron">
+            <h1 class="display-4">Добро пожаловать в сервис мониторинга доступности!</h1>
+            <p class="lead">Проверяйте доступность ваших сайтов и получайте уведомления о проблемах.</p>
+            <hr class="my-4">
+            {% if 'user_id' in session %}
+                <p>Вы вошли в систему.  Перейдите в <a href="{{ url_for('dashboard') }}">панель управления</a>.</p>
+            {% else %}
+                <p>
+                    <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Войти</a>
+                    <a class="btn btn-secondary btn-lg" href="{{ url_for('register') }}" role="button">Зарегистрироваться</a>
+                </p>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>
