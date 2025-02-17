@@ -14,6 +14,18 @@
 <body>
     <div class="container mt-5">
         <h1>Панель управления</h1>
+
+        <!-- Добавляем вывод flash-сообщений -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-success" role="alert">
+              {% for message in messages %}
+                {{ message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
         <p>Привет, {{ username }}!
             <a href="{{ url_for('add_website_route') }}" class="btn btn-success">Добавить сайт</a>
             <a href="{{ url_for('logout') }}" class="btn btn-danger">Выйти</a></p>

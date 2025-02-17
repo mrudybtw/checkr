@@ -26,7 +26,7 @@ def init_db():
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,  -- Будем хранить хеш пароля
+                password TEXT NOT NULL,  # Будем хранить хеш пароля
                 email TEXT UNIQUE NOT NULL
             )
         """)
@@ -68,7 +68,7 @@ def get_user_by_username(username):
     
 def get_user_by_id(id):
       with get_db() as db:
-        result = db.execute("SELECT * FROM users where id = ?", (id,)).fetchone()
+        result = db.execute("SELECT * FROM users where id = ?", (id,)).fetchone() # Исправлено
         return result
 
 def add_website(user_id, url):
