@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Результат проверки - Checkr</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+     <style>
+        body {
+            font-family: sans-serif;
+             margin: 20px;
+        }
+    </style>
+
+</head>
+<body>
+  <div class="container">
+    <h1>Результат проверки</h1>
+    <p>URL: <strong>{{ result.get('url', 'N/A') }}</strong></p>  
+    <p>Статус:
+        {% if result.status == "available" %}
+            <strong class="text-success">Доступен</strong>
+        {% else %}
+            <strong class="text-danger">Недоступен</strong>
+        {% endif %}
+    </p>
+    {% if result.status == "available" %}
+        <p>Время отклика: {{ result.response_time }} мс</p>
+        <p>Код ответа: {{ result.status_code }}</p>
+    {% elif result.status == "unavailable" %}
+         <p>Ошибка: {{result.error}}</p>
+    {% endif %}
+
+    <a href="/" class="btn btn-secondary">Назад</a>
+  </div>
+</body>
+</html>

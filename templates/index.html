@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkr - Мониторинг доступности</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Checkr - Мониторинг доступности</h1>
+        <p>Введите URL сайта для проверки:</p>
+        <form action="/check" method="GET">
+            <div class="form-group">
+                <input type="url" name="url" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Проверить</button>
+        </form>
+    </div>
+</body>
+</html>
