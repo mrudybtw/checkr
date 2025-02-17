@@ -13,4 +13,14 @@
             <p class="lead">Проверяйте доступность ваших сайтов и получайте уведомления о проблемах.</p>
             <hr class="my-4">
             {% if 'user_id' in session %}
-                <p>Вы в
+                <p>Вы вошли в систему.  Перейдите в <a href="{{ url_for('dashboard') }}">панель управления</a>.</p>
+            {% else %}
+                <p>
+                    <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Войти</a>
+                    <a class="btn btn-secondary btn-lg" href="{{ url_for('register') }}" role="button">Зарегистрироваться</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

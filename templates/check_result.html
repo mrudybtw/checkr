@@ -21,3 +21,8 @@
             {% if result.status_code %}
                 <p>Код ответа: {{ result.status_code }}</p>
             {% endif %}
+        {% endif %}
+         <p class="mt-3"><a href="{{ url_for('home') }}">Вернуться на главную</a></p>
+    </div>
+</body>
+</html>
