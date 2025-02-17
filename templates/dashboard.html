@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Checkr</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+         <h1>Панель управления</h1>
+    <p>Привет, {{ session.username }}! <a href="{{ url_for('logout') }}">Выйти</a></p>
+    <h2>Ваши сайты:</h2>
+    <a href="{{ url_for('add_website_route') }}" class="btn btn-success mb-3">Добавить сайт</a>
+
+    {% if websites %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>URL</th>
+                <th>Статус</th>
+                <th>Время отклика (мс)</th>
+                <th>Код ответа</th>
+                <th>Последняя проверка</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for website in websites %}
+                <tr>
+                    <td>{{ website.url }}</td>
+                     <td>
+                        {% if website.last_check.status == "available" %}
+                            <span class="badge badge-success">Доступен</span>
+                        {% else %}
+                             <span class="badge badge-danger">Недоступен</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if website.last_check.status == "available" %}
+                            {{ website.last_check.response_time }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if website.last_check.status == "available" %}
+                            {{ website.last_check.status_code }}
+                        {% else %}
+                             {{ website.last_check.status_code }}
+                        {% endif %}
+                    </td>
+
+                    <td>{{ website.last_check.checked_at if website.last_check.checked_at else '-' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Вы еще не добавили ни одного сайта.</p>
+    {% endif %}
+
+    </div>
+
+</body>
+</html>
